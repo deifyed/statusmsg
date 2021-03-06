@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/deifyed/statusmsg/pkg/battery"
+	"github.com/deifyed/statusmsg/pkg/clock"
 	"github.com/deifyed/statusmsg/pkg/volume"
 	"log"
 )
@@ -18,9 +19,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	clockStatus := clock.GetStatus()
+
 	fmt.Printf(
-		"%s %s",
+		"%s %s %s",
 		volumeStatus.String(),
 		batteryStatus.String(),
+		clockStatus.String(),
 	)
 }
