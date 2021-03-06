@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
+	"github.com/deifyed/statusmsg/pkg/update"
 	"github.com/deifyed/statusmsg/pkg/volume"
 	"log"
 )
@@ -19,7 +20,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+	updateStatus, err := update.GetStatus()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	clockStatus := clock.GetStatus()
+
+	if updateStatus.Packages != "" {
+		fmt.Printf("%s ", updateStatus.Packages)
+	}
 
 	fmt.Printf(
 		"%s %s %s",
