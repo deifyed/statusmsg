@@ -27,8 +27,8 @@ func main() {
 
 	clockStatus := clock.GetStatus()
 
-	if updateStatus.Packages != "" {
-		fmt.Printf("%s ", updateStatus.Packages)
+	if updateStatus.PackageCount != 0 {
+		fmt.Printf("%s ", updateStatus.String())
 	}
 
 	fmt.Printf(
