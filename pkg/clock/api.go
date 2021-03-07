@@ -5,10 +5,6 @@ import (
 	"time"
 )
 
-type Status struct {
-	Time time.Time
-}
-
 func (s Status) String() string {
 	return fmt.Sprintf("🕙%02d%02d%02d", s.Time.Day(), s.Time.Hour(), s.Time.Minute())
 }
