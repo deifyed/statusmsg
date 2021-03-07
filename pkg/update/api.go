@@ -13,7 +13,15 @@ func (s Status) String() string {
 func GetStatus() (Status, error) {
 	output, _ := exec.Command("checkupdates").Output()
 
-	count := len(strings.Split(strings.TrimSpace(string(output)), "\n"))
+	outputAsString := strings.TrimSpace(string(output))
+
+	var count int
+
+	if outputAsString == "" {
+		count = 0
+	} else {
+		count = len(strings.Split(outputAsString, "\n"))
+	}
 
 	return Status{
 		PackageCount: count,
