@@ -11,7 +11,10 @@ func (s Status) String() string {
 }
 
 func GetStatus() (Status, error) {
-	output, _ := exec.Command("checkupdates").Output()
+	output, err := exec.Command("checkupdates").Output()
+	if err != nil {
+		return Status{}, err
+	}
 
 	outputAsString := strings.TrimSpace(string(output))
 

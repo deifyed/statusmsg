@@ -22,10 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	updateStatus, err := update.GetStatus()
-	if err != nil {
-		log.Fatal(err)
-	}
+	updateStatus, _ := update.GetStatus()
 
 	clockStatus := clock.GetStatus()
 
