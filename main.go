@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
+	"github.com/deifyed/statusmsg/pkg/gme"
 	"github.com/deifyed/statusmsg/pkg/update"
 	"github.com/deifyed/statusmsg/pkg/volume"
 	"log"
@@ -28,7 +29,13 @@ func main() {
 
 	clockStatus := clock.GetStatus()
 
+	gmeStatus, _ := gme.GetStatus()
+
 	var buf bytes.Buffer
+
+	if gmeStatus.Timestamp != 0 {
+		fmt.Fprintf(&buf, "%s ", gmeStatus.String())
+	}
 
 	if updateStatus.PackageCount != 0 {
 		fmt.Fprintf(&buf, "%s ", updateStatus.String())
