@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
@@ -27,14 +28,19 @@ func main() {
 
 	clockStatus := clock.GetStatus()
 
+	var buf bytes.Buffer
+
 	if updateStatus.PackageCount != 0 {
-		fmt.Printf("%s ", updateStatus.String())
+		fmt.Fprintf(&buf, "%s ", updateStatus.String())
 	}
 
-	fmt.Printf(
+	fmt.Fprintf(
+		&buf,
 		"%s %s %s",
 		volumeStatus.String(),
 		batteryStatus.String(),
 		clockStatus.String(),
 	)
+
+	fmt.Print(buf.String())
 }
