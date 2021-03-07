@@ -15,14 +15,15 @@ var defaultBatteryStatusPath = path.Join(defaultBatteryPath, "status")
 func (b Status) String() string {
 	icon := ""
 
-	switch strings.ToLower(b.Status) {
-	case "discharging":
+	discharging := strings.Contains(strings.ToLower(b.Status), "discharging")
+
+	if discharging {
 		icon = "🔋"
-	default:
-		icon = "⚡ "
+	} else {
+		icon = "⚡"
 	}
 
-	return fmt.Sprintf("%s %s%s", icon, b.Capacity, "%")
+	return fmt.Sprintf("%s%s%s", icon, b.Capacity, "%")
 }
 
 func GetStatus() (Status, error) {
