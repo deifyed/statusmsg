@@ -20,11 +20,11 @@ func main() {
 		log.Println(fmt.Sprintf("unable to open logfile %s", logPath), err)
 	}
 
-	log.SetOutput(logFile)
-
 	defer func() {
 		_ = logFile.Close()
 	}()
+
+	log.SetOutput(logFile)
 
 	volumeStatus, err := volume.GetStatus()
 	if err != nil {
