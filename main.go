@@ -9,17 +9,31 @@ import (
 	"github.com/deifyed/statusmsg/pkg/update"
 	"github.com/deifyed/statusmsg/pkg/volume"
 	"log"
+	"os"
+	"path"
 )
 
 func main() {
+	logPath := path.Join("/tmp", "statusbar.log")
+	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Println(fmt.Sprintf("unable to open logfile %s", logPath), err)
+	}
+
+	log.SetOutput(logFile)
+
+	defer func() {
+		_ = logFile.Close()
+	}()
+
 	volumeStatus, err := volume.GetStatus()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(fmt.Errorf("error getting volume status: %w", err))
 	}
 
 	batteryStatus, err := battery.GetStatus()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(fmt.Errorf("error getting battery status: %w", err))
 	}
 
 	updateStatus, _ := update.GetStatus()
