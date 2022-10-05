@@ -3,14 +3,14 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/deifyed/statusmsg/pkg/battery"
-	"github.com/deifyed/statusmsg/pkg/clock"
-	"github.com/deifyed/statusmsg/pkg/gme"
-	"github.com/deifyed/statusmsg/pkg/update"
-	"github.com/deifyed/statusmsg/pkg/volume"
 	"log"
 	"os"
 	"path"
+
+	"github.com/deifyed/statusmsg/pkg/battery"
+	"github.com/deifyed/statusmsg/pkg/clock"
+	"github.com/deifyed/statusmsg/pkg/gme"
+	"github.com/deifyed/statusmsg/pkg/volume"
 )
 
 func main() {
@@ -36,8 +36,6 @@ func main() {
 		log.Println(fmt.Errorf("error getting battery status: %w", err))
 	}
 
-	updateStatus, _ := update.GetStatus()
-
 	clockStatus := clock.GetStatus()
 
 	gmeStatus, _ := gme.GetStatus()
@@ -46,10 +44,6 @@ func main() {
 
 	if gmeStatus.Timestamp != 0 {
 		fmt.Fprintf(&buf, "%s ", gmeStatus.String())
-	}
-
-	if updateStatus.PackageCount != 0 {
-		fmt.Fprintf(&buf, "%s ", updateStatus.String())
 	}
 
 	fmt.Fprintf(
