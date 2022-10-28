@@ -15,7 +15,9 @@ import (
 
 func main() {
 	logPath := path.Join("/tmp", "statusbar.log")
-	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+
+	// #nosec G304 -- var defined above for readability
+	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		log.Println(fmt.Sprintf("unable to open logfile %s", logPath), err)
 	}
