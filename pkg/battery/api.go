@@ -27,11 +27,13 @@ func (b Status) String() string {
 }
 
 func GetStatus() (Status, error) {
+	// #nosec G304 -- Constant defined above
 	rawCapacity, err := os.ReadFile(defaultBatteryCapacityPath)
 	if err != nil {
 		return Status{}, fmt.Errorf("reading capacity: %w", err)
 	}
 
+	// #nosec G304 -- Defined above
 	rawStatus, err := os.ReadFile(defaultBatteryStatusPath)
 	if err != nil {
 		return Status{}, fmt.Errorf("reading status: %w", err)

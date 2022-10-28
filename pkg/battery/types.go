@@ -4,4 +4,3 @@ type Status struct {
 	Capacity string
 	Status string
 }
-
