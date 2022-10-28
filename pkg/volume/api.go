@@ -37,18 +37,13 @@ func isBluetoothActive() (bool, error) {
 }
 
 func GetStatus() (status Status, err error) {
-	var (
-		pamixerOutput,
-		bluetoothOutput []byte
-	)
-
-	pamixerOutput, err = exec.Command("pamixer", "--get-volume-human").Output()
+	pamixerOutput, err := exec.Command("pamixer", "--get-volume-human").Output()
 	if err != nil {
 		return Status{}, fmt.Errorf("fetching pamixer information: %w", err)
 	}
 
 	if active, _ := isBluetoothActive(); active {
-		bluetoothOutput, err = exec.Command("bluetoothctl", "info", "CC:98:8B:94:9F:59").Output()
+		bluetoothOutput, err := exec.Command("bluetoothctl", "info", "88:C9:E8:38:1D:CC").Output()
 		if err != nil {
 			return Status{}, fmt.Errorf("fetching bluetooth device information: %w", err)
 		}
