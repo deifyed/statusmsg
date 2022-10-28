@@ -1,5 +1,5 @@
 .PHONY=fmt
-BINARY_NAME=statusmsg
+BINARY_NAME=status
 GOPATH := $(shell go env GOPATH)
 GOBIN ?= $(GOPATH)/bin
 PREFIX=~/.local/bin
