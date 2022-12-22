@@ -1,6 +1,5 @@
 package battery
 
-type Status struct {
-	Capacity string
-	Status string
+type logger interface {
+	Warnf(format string, args ...interface{})
 }
