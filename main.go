@@ -3,58 +3,67 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"os"
-	"path"
+	"strings"
 
 	"github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
-	"github.com/deifyed/statusmsg/pkg/gme"
-	"github.com/deifyed/statusmsg/pkg/volume"
+	"github.com/deifyed/statusmsg/pkg/sound"
+	"github.com/sirupsen/logrus"
 )
 
-func main() {
-	logPath := path.Join("/tmp", "statusbar.log")
+const logPath = "/tmp/statusmsg.log"
 
+func main() {
 	// #nosec G304 -- var defined above for readability
 	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		log.Println(fmt.Sprintf("unable to open logfile %s", logPath), err)
 	}
 
-	defer func() {
-		_ = logFile.Close()
-	}()
+	defer func() { _ = logFile.Close() }()
 
-	log.SetOutput(logFile)
-
-	volumeStatus, err := volume.GetStatus()
-	if err != nil {
-		log.Println(fmt.Errorf("error getting volume status: %w", err))
-	}
-
-	batteryStatus, err := battery.GetStatus()
-	if err != nil {
-		log.Println(fmt.Errorf("error getting battery status: %w", err))
-	}
-
-	clockStatus := clock.GetStatus()
-
-	gmeStatus, _ := gme.GetStatus()
+	log := logrus.New()
+	configureLogger(log, logFile)
 
 	var buf bytes.Buffer
 
-	if gmeStatus.Timestamp != 0 {
-		fmt.Fprintf(&buf, "%s ", gmeStatus.String())
-	}
-
-	fmt.Fprintf(
-		&buf,
-		"%s %s %s",
-		volumeStatus.String(),
-		batteryStatus.String(),
-		clockStatus.String(),
-	)
+	fmt.Fprint(&buf, strings.Join([]string{
+		formatSound(sound.DeviceType(log), sound.Volume(log)),
+		formatBattery(battery.Status(log), battery.Percentage(log)),
+		formatClock(clock.DTG()),
+	}, " :: "))
 
 	fmt.Print(buf.String())
+}
+
+func formatBattery(status string, percentage string) string {
+	if percentage == "err" {
+		return "ERR"
+	}
+
+	return fmt.Sprintf("BAT %s%s%%", status, percentage)
+}
+
+func formatSound(deviceType string, volume string) string {
+	if volume == "err" {
+		return "ERR"
+	}
+
+	return fmt.Sprintf("%s/%s", deviceType, volume)
+}
+
+func formatClock(dtg string) string {
+	return fmt.Sprintf("DTG %s", dtg)
+}
+
+func configureLogger(log *logrus.Logger, out io.Writer) {
+	log.SetFormatter(&logrus.TextFormatter{
+		ForceColors:   true,
+		FullTimestamp: true,
+	})
+
+	log.SetOutput(out)
 }
