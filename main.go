@@ -30,11 +30,17 @@ func main() {
 
 	var buf bytes.Buffer
 
-	fmt.Fprint(&buf, strings.Join([]string{
+	line := []string{
 		formatSound(sound.DeviceType(log), sound.Volume(log)),
-		formatBattery(battery.Status(log), battery.Percentage(log)),
 		formatClock(clock.DTG()),
-	}, " :: "))
+	}
+
+	batteryInfo := formatBattery(battery.Status(log), battery.Percentage(log))
+	if batteryInfo != "ERR" {
+		line = append(line, batteryInfo)
+	}
+
+	fmt.Fprint(&buf, strings.Join(line, " :: "))
 
 	fmt.Print(buf.String())
 }
