@@ -2,18 +2,25 @@ package sound
 
 import (
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
+var volumeRe = regexp.MustCompile("\\d+%")
+
 func Volume(log logger) string {
-	volume, err := exec.Command("pamixer", "--get-volume-human").Output()
+	volume, err := exec.Command("pactl",
+		"get-sink-volume", "@DEFAULT_SINK@",
+	).Output()
 	if err != nil {
-		log.Warnf("fetching pamixer information: %s", err.Error())
+		log.Warnf("fetching pactl information: %s", err.Error())
 
 		return "err"
 	}
 
-	return strings.ReplaceAll(string(volume), "\n", "")
+	cleanedVolume := volumeRe.Find(volume)
+
+	return strings.ReplaceAll(string(cleanedVolume), "\n", "")
 }
 
 var relevantDeviceMACs = []string{
