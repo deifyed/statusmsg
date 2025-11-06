@@ -11,6 +11,7 @@ import (
 	"github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
 	"github.com/deifyed/statusmsg/pkg/sound"
+	"github.com/deifyed/statusmsg/pkg/tickers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,7 +31,14 @@ func main() {
 
 	var buf bytes.Buffer
 
+	gmePercentage, err := tickers.GetCurrentPercentage("GME")
+	if err != nil {
+		log.Warn(fmt.Sprintf("Error getting GME percentage: %s", err.Error()))
+		gmePercentage = "N/A"
+	}
+
 	line := []string{
+		formatTicker("GME", gmePercentage),
 		formatSound(sound.DeviceType(log), sound.Volume(log)),
 		clock.DTG(),
 	}
@@ -43,6 +51,10 @@ func main() {
 	fmt.Fprint(&buf, strings.Join(line, " :: "))
 
 	fmt.Print(buf.String())
+}
+
+func formatTicker(symbol string, percentage string) string {
+	return fmt.Sprintf("%s(%s%%)", symbol, percentage)
 }
 
 func formatBattery(status string, percentage string) string {
