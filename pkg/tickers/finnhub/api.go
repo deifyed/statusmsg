@@ -37,6 +37,10 @@ func (client Client) GetQuote(symbol string) (quote, error) {
 		return quote{}, fmt.Errorf("executing request: %w", err)
 	}
 
+	if rawResponse.StatusCode != http.StatusOK {
+		return quote{}, fmt.Errorf("response not OK, got %d", rawResponse.StatusCode)
+	}
+
 	var response quoteResponse
 
 	err = json.NewDecoder(rawResponse.Body).Decode(&response)

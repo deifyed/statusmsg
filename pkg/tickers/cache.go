@@ -12,7 +12,7 @@ import (
 const (
 	defaultStoreFilepath        = "/home/julius/.local/state/statusbar/tickers"
 	defaultStoreFilePermissions = 0o755
-	lifespan                    = 1 * time.Hour
+	lifespan                    = 15 * time.Minute
 )
 
 var errCacheMiss = errors.New("cache miss")
