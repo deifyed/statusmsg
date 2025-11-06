@@ -1,6 +1,6 @@
 module github.com/deifyed/statusmsg
 
-go 1.20
+go 1.25.4
 
 require github.com/sirupsen/logrus v1.9.0
 

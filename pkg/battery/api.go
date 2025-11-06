@@ -1,3 +1,4 @@
+// Package battery handles retrieving information about the battery
 package battery
 
 import (
@@ -8,8 +9,10 @@ import (
 
 const defaultBatteryPath = "/sys/class/power_supply/BAT0"
 
-var defaultBatteryCapacityPath = path.Join(defaultBatteryPath, "capacity")
-var defaultBatteryStatusPath = path.Join(defaultBatteryPath, "status")
+var (
+	defaultBatteryCapacityPath = path.Join(defaultBatteryPath, "capacity")
+	defaultBatteryStatusPath   = path.Join(defaultBatteryPath, "status")
+)
 
 func Percentage(log logger) string {
 	rawCapacity, err := os.ReadFile(defaultBatteryCapacityPath)

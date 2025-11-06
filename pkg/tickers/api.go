@@ -1,3 +1,4 @@
+// Package tickers handles retrieving information regarding stock tickers
 package tickers
 
 import (

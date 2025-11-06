@@ -15,10 +15,7 @@ const (
 	lifespan                    = 1 * time.Hour
 )
 
-var (
-	errCacheMiss     = errors.New("cache miss")
-	errCacheNotFound = errors.New("cache not found")
-)
+var errCacheMiss = errors.New("cache miss")
 
 type cacheHit struct {
 	Percentage string

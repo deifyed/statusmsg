@@ -1,4 +1,4 @@
-// Package sound exposes information regarding sound
+// Package sound handles retrieving information regarding sound
 package sound
 
 import (

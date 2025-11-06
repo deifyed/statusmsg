@@ -1,3 +1,4 @@
+// Package finnhub handles retrieving stock information using the finnhub API
 package finnhub
 
 import (
@@ -11,22 +12,6 @@ const defaultBaseURL = "https://finnhub.io/api/v1"
 
 type Client struct {
 	Key string
-}
-
-type quote struct {
-	OpeningPrice float64
-	CurrentPrice float64
-}
-
-type quoteResponse struct {
-	OpeningPrice float64 `json:"o"`
-	CurrentPrice float64 `json:"c"`
-}
-
-func (q quote) Percentage() string {
-	percentage := (q.CurrentPrice - q.OpeningPrice) / q.OpeningPrice * 100
-
-	return fmt.Sprintf("%.2f", percentage)
 }
 
 func (client Client) GetQuote(symbol string) (quote, error) {
@@ -60,4 +45,10 @@ func (client Client) GetQuote(symbol string) (quote, error) {
 	}
 
 	return quote(response), nil
+}
+
+func (q quote) Percentage() string {
+	percentage := (q.CurrentPrice - q.OpeningPrice) / q.OpeningPrice * 100
+
+	return fmt.Sprintf("%.2f", percentage)
 }

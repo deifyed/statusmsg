@@ -1,3 +1,4 @@
+// Package clock handles displaying time
 package clock
 
 import (
