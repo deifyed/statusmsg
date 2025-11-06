@@ -3,10 +3,13 @@ package finnhub
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 )
+
+var ErrUnrecoverable = errors.New("unrecoverable")
 
 const defaultBaseURL = "https://finnhub.io/api/v1"
 
@@ -38,6 +41,10 @@ func (client Client) GetQuote(symbol string) (quote, error) {
 	}
 
 	if rawResponse.StatusCode != http.StatusOK {
+		if rawResponse.StatusCode == http.StatusUnauthorized {
+			return quote{}, fmt.Errorf("unauthorized: %w", ErrUnrecoverable)
+		}
+
 		return quote{}, fmt.Errorf("response not OK, got %d", rawResponse.StatusCode)
 	}
 

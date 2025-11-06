@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/deifyed/statusmsg/pkg/tickers/finnhub"
 )
 
 func GetCurrentPercentage(symbol string) (string, error) {
@@ -21,7 +23,13 @@ func GetCurrentPercentage(symbol string) (string, error) {
 
 	q, err := getCurrentPercentage(symbol)
 	if err != nil {
-		return "", fmt.Errorf("getting current percentage: %w", err)
+		if !errors.Is(err, finnhub.ErrUnrecoverable) {
+			return "", fmt.Errorf("getting current percentage: %w", err)
+		}
+
+		// Hack to prevent spamming API upon unrecoverable error
+		q.LastUpdated = time.Now().Add(12 * time.Hour)
+		q.Percentage = "err"
 	}
 
 	err = cacheStore(symbol, q.LastUpdated, q.Percentage)
