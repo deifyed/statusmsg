@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"strings"
 
 	bat "github.com/deifyed/statusmsg/pkg/battery"
@@ -15,15 +16,23 @@ import (
 )
 
 const (
-	logPath   = "/tmp/statusmsg.log"
-	delimiter = "  "
+	defaultLogFileName = "statusmsg.log"
+	defaultAppName     = "statusmsg"
+	delimiter          = "  "
 )
 
 func main() {
-	// #nosec G304 -- var defined above for readability
-	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
+	absoluteApplicationDir, err := getApplicationDirectory()
 	if err != nil {
-		log.Println(fmt.Sprintf("unable to open logfile %s", logPath), err)
+		log.Fatalf("acquiring application directory: %s", err.Error())
+	}
+
+	logFilePath := path.Join(absoluteApplicationDir, defaultLogFileName)
+
+	// #nosec G304 -- var defined above for readability
+	logFile, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND|os.O_TRUNC, 0o600)
+	if err != nil {
+		log.Println(fmt.Sprintf("unable to open logfile %s", defaultLogFileName), err)
 	}
 
 	defer func() { _ = logFile.Close() }()
@@ -97,6 +106,21 @@ func sound() (string, error) {
 	}
 
 	return fmt.Sprintf("dB %d%%", deviceVolume), nil
+}
+
+func getApplicationDirectory() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("acquiring user home directory: %w", err)
+	}
+
+	absoluteApplicationDir := path.Join(home, ".local", "app", defaultAppName)
+	err = os.MkdirAll(absoluteApplicationDir, 0o755)
+	if err != nil {
+		return "", fmt.Errorf("creating app directory: %w", err)
+	}
+
+	return absoluteApplicationDir, nil
 }
 
 func configureLogger(log *logrus.Logger, out io.Writer) {
