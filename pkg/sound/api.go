@@ -1,3 +1,4 @@
+// Package sound exposes information regarding sound
 package sound
 
 import (
@@ -6,7 +7,7 @@ import (
 	"strings"
 )
 
-var volumeRe = regexp.MustCompile("\\d+%")
+var volumeRe = regexp.MustCompile(`\d+%`)
 
 func Volume(log logger) string {
 	volume, err := exec.Command("pactl",

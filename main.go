@@ -18,7 +18,7 @@ const logPath = "/tmp/statusmsg.log"
 
 func main() {
 	// #nosec G304 -- var defined above for readability
-	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
 	if err != nil {
 		log.Println(fmt.Sprintf("unable to open logfile %s", logPath), err)
 	}
@@ -32,7 +32,7 @@ func main() {
 
 	line := []string{
 		formatSound(sound.DeviceType(log), sound.Volume(log)),
-		formatClock(clock.DTG()),
+		clock.DTG(),
 	}
 
 	batteryInfo := formatBattery(battery.Status(log), battery.Percentage(log))
@@ -59,10 +59,6 @@ func formatSound(deviceType string, volume string) string {
 	}
 
 	return fmt.Sprintf("%s/%s", deviceType, volume)
-}
-
-func formatClock(dtg string) string {
-	return fmt.Sprintf("DTG %s", dtg)
 }
 
 func configureLogger(log *logrus.Logger, out io.Writer) {
