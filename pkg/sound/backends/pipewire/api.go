@@ -4,7 +4,15 @@ package pipewire
 import (
 	"fmt"
 	"math"
+	"regexp"
 )
+
+const (
+	DeviceTypeHeadphones = "headphones"
+	DeviceTypeSpeaker    = "speaker"
+)
+
+var bluetoothRe = regexp.MustCompile(`(?i)bluetooth`)
 
 type Client struct{}
 
@@ -43,5 +51,9 @@ func (c Client) GetDevice() (string, error) {
 		return "", fmt.Errorf("getting default audio sink name: %w", err)
 	}
 
-	return defaultAudioSinkName, nil
+	if bluetoothRe.Match([]byte(defaultAudioSinkName)) {
+		return DeviceTypeHeadphones, nil
+	}
+
+	return DeviceTypeSpeaker, nil
 }

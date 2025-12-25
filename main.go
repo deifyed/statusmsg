@@ -72,9 +72,14 @@ func battery() (string, error) {
 func sound() (string, error) {
 	soundClient := pipewire.Client{}
 
-	deviceType, err := soundClient.GetDevice()
+	deviceTypeRaw, err := soundClient.GetDevice()
 	if err != nil {
 		return "", fmt.Errorf("acquiring device type: %w", err)
+	}
+
+	deviceType := "🔈"
+	if deviceTypeRaw == pipewire.DeviceTypeHeadphones {
+		deviceType = "🎧"
 	}
 
 	deviceVolume, err := soundClient.GetVolume()
