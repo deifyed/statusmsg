@@ -1,17 +1,15 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/deifyed/statusmsg/pkg/battery"
+	bat "github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
-	"github.com/deifyed/statusmsg/pkg/sound"
-	"github.com/deifyed/statusmsg/pkg/tickers"
+	"github.com/deifyed/statusmsg/pkg/sound/backends/pipewire"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,48 +27,62 @@ func main() {
 	log := logrus.New()
 	configureLogger(log, logFile)
 
-	var buf bytes.Buffer
+	fmt.Print(status(log))
+}
 
-	gmePercentage, err := tickers.GetCurrentPercentage("GME")
+func status(log *logrus.Logger) string {
+	line := make([]string, 0)
+
+	if status, err := sound(); err == nil {
+		line = append(line, status)
+	} else {
+		log.Warnf("Unable to get sound status: %s", err.Error())
+	}
+
+	if status, err := battery(); err == nil {
+		line = append(line, status)
+	} else {
+		log.Warnf("Unable to get battery status: %s", err.Error())
+	}
+
+	line = append(line, clock.DTG())
+
+	return strings.Join(line, " :: ")
+}
+
+func battery() (string, error) {
+	charging, err := bat.Charging()
 	if err != nil {
-		log.Warn(fmt.Sprintf("Error getting GME percentage: %s", err.Error()))
-		gmePercentage = "N/A"
+		return "", fmt.Errorf("acquiring status: %w", err)
 	}
 
-	line := []string{
-		formatTicker("GME", gmePercentage),
-		formatSound(sound.DeviceType(log), sound.Volume(log)),
-		clock.DTG(),
+	batteryStatus := "-"
+	if charging {
+		batteryStatus = "+"
 	}
 
-	batteryInfo := formatBattery(battery.Status(log), battery.Percentage(log))
-	if batteryInfo != "ERR" {
-		line = append(line, batteryInfo)
+	batteryPercentage, err := bat.Percentage()
+	if err != nil {
+		return "", fmt.Errorf("acquiring percentage: %w", err)
 	}
 
-	fmt.Fprint(&buf, strings.Join(line, " :: "))
-
-	fmt.Print(buf.String())
+	return fmt.Sprintf("BAT %s%s%%", batteryStatus, batteryPercentage), nil
 }
 
-func formatTicker(symbol string, percentage string) string {
-	return fmt.Sprintf("%s(%s%%)", symbol, percentage)
-}
+func sound() (string, error) {
+	soundClient := pipewire.Client{}
 
-func formatBattery(status string, percentage string) string {
-	if percentage == "err" {
-		return "ERR"
+	deviceType, err := soundClient.GetDevice()
+	if err != nil {
+		return "", fmt.Errorf("acquiring device type: %w", err)
 	}
 
-	return fmt.Sprintf("BAT %s%s%%", status, percentage)
-}
-
-func formatSound(deviceType string, volume string) string {
-	if volume == "err" {
-		return "ERR"
+	deviceVolume, err := soundClient.GetVolume()
+	if err != nil {
+		return "", fmt.Errorf("acquiring volume: %w", err)
 	}
 
-	return fmt.Sprintf("%s/%s", deviceType, volume)
+	return fmt.Sprintf("%s/%d", deviceType, deviceVolume), nil
 }
 
 func configureLogger(log *logrus.Logger, out io.Writer) {

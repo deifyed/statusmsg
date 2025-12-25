@@ -65,6 +65,8 @@ func getVolumeProp(props []map[string]any) (int, error) {
 	if !ok {
 		return -1, fmt.Errorf("invalid %s data", "volume")
 	}
+
+	return int(floatVolume), nil
 }
 
 func getNodeByName(objects []pwDumpResponseObject, name string) (pwDumpResponseObject, error) {
@@ -101,39 +103,4 @@ func metadataKeyIndex(obj pwDumpResponseObject, key string) int {
 
 /*
 pw-dump | jq '.[] | select(.type == "PipeWire:Interface:Metadata")'
-{
-  "id": 39,
-  "type": "PipeWire:Interface:Metadata",
-  "version": 3,
-  "permissions": [
-    "r",
-    "w",
-    "x"
-  ],
-  "props": {
-    "client.id": 33,
-    "factory.id": 7,
-    "metadata.name": "default",
-    "module.id": 6,
-    "object.serial": 39
-  },
-  "metadata": [
-    {
-      "subject": 0,
-      "key": "default.audio.sink",
-      "type": "Spa:String:JSON",
-      "value": {
-        "name": "alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.analog-stereo"
-      }
-    },
-    {
-      "subject": 0,
-      "key": "default.audio.source",
-      "type": "Spa:String:JSON",
-      "value": {
-        "name": "alsa_input.usb-Focusrite_Scarlett_2i2_USB-00.analog-stereo"
-      }
-    }
-  ]
-}
 */

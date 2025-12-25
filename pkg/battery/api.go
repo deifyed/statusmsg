@@ -2,6 +2,7 @@
 package battery
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -14,31 +15,21 @@ var (
 	defaultBatteryStatusPath   = path.Join(defaultBatteryPath, "status")
 )
 
-func Percentage(log logger) string {
+func Percentage() (string, error) {
 	rawCapacity, err := os.ReadFile(defaultBatteryCapacityPath)
 	if err != nil {
-		log.Warnf("reading capacity: %s", err.Error())
-
-		return "err"
+		return "", fmt.Errorf("reading capacity: %w", err)
 	}
 
-	return strings.TrimSpace(string(rawCapacity))
+	return strings.TrimSpace(string(rawCapacity)), nil
 }
 
-func Status(log logger) string {
+func Charging() (bool, error) {
 	// #nosec G304 -- Defined above
 	rawStatus, err := os.ReadFile(defaultBatteryStatusPath)
 	if err != nil {
-		log.Warnf("reading status: %s", err.Error())
-
-		return "err"
+		return false, fmt.Errorf("reading status: %w", err)
 	}
 
-	discharging := strings.Contains(strings.ToLower(string(rawStatus)), "discharging")
-
-	if discharging {
-		return "-"
-	}
-
-	return "+"
+	return strings.Contains(strings.ToLower(string(rawStatus)), "discharging"), nil
 }

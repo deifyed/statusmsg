@@ -2,15 +2,12 @@
 package pipewire
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"os/exec"
 )
 
-type client struct{}
+type Client struct{}
 
-func (c client) GetVolume() (int, error) {
+func (c Client) GetVolume() (int, error) {
 	objects, err := getPipeWireObjects()
 	if err != nil {
 		return -1, fmt.Errorf("getting objects: %w", err)
@@ -34,30 +31,16 @@ func (c client) GetVolume() (int, error) {
 	return volume, nil
 }
 
-func getPipeWireObjects() ([]pwDumpResponseObject, error) {
-	var (
-		stdout bytes.Buffer
-		stderr bytes.Buffer
-	)
-
-	cmd := exec.Command("pw-dump")
-
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
+func (c Client) GetDevice() (string, error) {
+	objects, err := getPipeWireObjects()
 	if err != nil {
-		err = fmt.Errorf("%w: %s", err, stderr.String())
-
-		return nil, fmt.Errorf("running command: %w", err)
+		return "", fmt.Errorf("getting objects: %w", err)
 	}
 
-	var response []pwDumpResponseObject
-
-	err = json.NewDecoder(&stdout).Decode(&response)
+	defaultAudioSinkName, err := getDefaultAudioSinkName(objects)
 	if err != nil {
-		return nil, fmt.Errorf("decoding: %w", err)
+		return "", fmt.Errorf("getting default audio sink name: %w", err)
 	}
 
-	return response, nil
+	return defaultAudioSinkName, nil
 }
