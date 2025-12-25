@@ -24,22 +24,23 @@ func getDefaultAudioSinkName(objects []pwDumpResponseObject) (string, error) {
 	return "", fmt.Errorf("couldn't find %s", metadataKeyDefaultAudioSink)
 }
 
-func getVolumeProp(props []map[string]any) (int, error) {
-	relevantPropIndex := -1
-
-	for index, prop := range props {
-		if _, ok := prop["volume"]; ok {
-			relevantPropIndex = index
-
-			break
+func getProp(key string, props []map[string]any) (any, bool) {
+	for _, prop := range props {
+		if _, ok := prop[key]; ok {
+			return prop[key], true
 		}
 	}
 
-	if relevantPropIndex == -1 {
+	return nil, false
+}
+
+func getVolumeProp(props []map[string]any) (int, error) {
+	prop, ok := getProp("volume", props)
+	if !ok {
 		return -1, fmt.Errorf("couldn't find %s prop", "volume")
 	}
 
-	floatVolume, ok := props[relevantPropIndex]["volume"].(float64)
+	floatVolume, ok := prop.(float64)
 	if !ok {
 		return -1, fmt.Errorf("invalid %s data", "volume")
 	}
@@ -49,7 +50,12 @@ func getVolumeProp(props []map[string]any) (int, error) {
 
 func getNodeByName(objects []pwDumpResponseObject, name string) (pwDumpResponseObject, error) {
 	for _, obj := range objects {
-		if obj.Info.NodeName == name {
+		nodeName, ok := obj.Info.Props["node.name"]
+		if !ok {
+			continue
+		}
+
+		if nodeName == name {
 			return obj, nil
 		}
 	}

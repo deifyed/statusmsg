@@ -90,6 +90,7 @@ type pwDumpResponseObjectInfoParams struct {
 type pwDumpResponseObjectInfo struct {
 	NodeName string                         `json:"node.name"`
 	Params   pwDumpResponseObjectInfoParams `json:"params"`
+	Props    map[string]any
 }
 
 type pwDumpResponseObject struct {
