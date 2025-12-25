@@ -1,36 +1,14 @@
 package pipewire
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const (
 	typePipeWireMetadata        = "PipeWire:Interface:Metadata"
 	typePipeWireInterfaceNode   = "PipeWire:Interface:Node"
 	metadataKeyDefaultAudioSink = "default.audio.sink"
 )
-
-type pwDumpResponseObjectMetadataValue struct {
-	Name string `json:"name"`
-}
-
-type pwDumpResponseObjectMetadata struct {
-	Key   string                            `json:"key"`
-	Value pwDumpResponseObjectMetadataValue `json:"value"`
-}
-
-type pwDumpResponseObjectInfoParams struct {
-	Props []map[string]any `json:"Props"`
-}
-
-type pwDumpResponseObjectInfo struct {
-	NodeName string                         `json:"node.name"`
-	Params   pwDumpResponseObjectInfoParams `json:"params"`
-}
-
-type pwDumpResponseObject struct {
-	Type     string                         `json:"type"`
-	Metadata []pwDumpResponseObjectMetadata `json:"metadata"`
-	Info     pwDumpResponseObjectInfo       `json:"info"`
-}
 
 func getDefaultAudioSinkName(objects []pwDumpResponseObject) (string, error) {
 	metadataObjects := filterType(objects, typePipeWireMetadata)

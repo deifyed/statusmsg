@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:embed testdata/pw-dump.json
+//go:embed testdata/pw-dump-full.json
 var pwDump string
 
 func TestParsing(t *testing.T) {
