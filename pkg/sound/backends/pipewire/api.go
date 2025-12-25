@@ -3,6 +3,7 @@ package pipewire
 
 import (
 	"fmt"
+	"math"
 )
 
 type Client struct{}
@@ -28,7 +29,7 @@ func (c Client) GetVolume() (int, error) {
 		return -1, fmt.Errorf("getting volume prop: %w", err)
 	}
 
-	return volume, nil
+	return int(math.Round(volume * 100)), nil
 }
 
 func (c Client) GetDevice() (string, error) {

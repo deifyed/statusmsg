@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	typePipeWireMetadata        = "PipeWire:Interface:Metadata"
-	typePipeWireInterfaceNode   = "PipeWire:Interface:Node"
+	typePipeWireMetadata = "PipeWire:Interface:Metadata"
+
 	metadataKeyDefaultAudioSink = "default.audio.sink"
 )
 
@@ -34,7 +34,7 @@ func getProp(key string, props []map[string]any) (any, bool) {
 	return nil, false
 }
 
-func getVolumeProp(props []map[string]any) (int, error) {
+func getVolumeProp(props []map[string]any) (float64, error) {
 	prop, ok := getProp("volume", props)
 	if !ok {
 		return -1, fmt.Errorf("couldn't find %s prop", "volume")
@@ -45,7 +45,7 @@ func getVolumeProp(props []map[string]any) (int, error) {
 		return -1, fmt.Errorf("invalid %s data", "volume")
 	}
 
-	return int(floatVolume), nil
+	return floatVolume, nil
 }
 
 func getNodeByName(objects []pwDumpResponseObject, name string) (pwDumpResponseObject, error) {
