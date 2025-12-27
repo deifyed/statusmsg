@@ -13,7 +13,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const logPath = "/tmp/statusmsg.log"
+const (
+	logPath   = "/tmp/statusmsg.log"
+	delimiter = "  "
+)
 
 func main() {
 	// #nosec G304 -- var defined above for readability
@@ -47,7 +50,7 @@ func status(log *logrus.Logger) string {
 
 	line = append(line, clock.DTG())
 
-	return strings.Join(line, "  ")
+	return strings.Join(line, delimiter)
 }
 
 func battery() (string, error) {
