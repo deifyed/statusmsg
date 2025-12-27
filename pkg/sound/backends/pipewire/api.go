@@ -32,9 +32,9 @@ func (c Client) GetVolume() (int, error) {
 		return -1, fmt.Errorf("getting default audio sink node: %w", err)
 	}
 
-	volume, err := getVolumeProp(defaultAudioSinkNode.Info.Params.Props)
+	volume, err := getVolume(defaultAudioSinkNode.ID)
 	if err != nil {
-		return -1, fmt.Errorf("getting volume prop: %w", err)
+		return -1, fmt.Errorf("acquiring volume: %w", err)
 	}
 
 	return int(math.Round(volume * 100)), nil

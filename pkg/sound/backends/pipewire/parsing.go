@@ -2,6 +2,9 @@ package pipewire
 
 import (
 	"fmt"
+	"os/exec"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -85,6 +88,27 @@ func metadataKeyIndex(obj pwDumpResponseObject, key string) int {
 	return -1
 }
 
-/*
-pw-dump | jq '.[] | select(.type == "PipeWire:Interface:Metadata")'
-*/
+func sanitizeVolume(raw []byte) string {
+	asString := string(raw)
+	trimmed := strings.Trim(asString, "\n")
+
+	return strings.Split(trimmed, " ")[1]
+}
+
+func getVolume(id int) (float64, error) {
+	rawVolume, err := exec.Command("wpctl",
+		"get-volume", fmt.Sprintf("%d", id),
+	).Output()
+	if err != nil {
+		return -1, fmt.Errorf("running command: %w", err)
+	}
+
+	saneVolume := sanitizeVolume(rawVolume)
+
+	volume, err := strconv.ParseFloat(saneVolume, 64)
+	if err != nil {
+		return -1, fmt.Errorf("parsing command output: %w", err)
+	}
+
+	return volume, nil
+}

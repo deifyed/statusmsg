@@ -94,6 +94,7 @@ type pwDumpResponseObjectInfo struct {
 }
 
 type pwDumpResponseObject struct {
+	ID       int                            `json:"id"`
 	Type     string                         `json:"type"`
 	Metadata []pwDumpResponseObjectMetadata `json:"metadata"`
 	Info     pwDumpResponseObjectInfo       `json:"info"`
