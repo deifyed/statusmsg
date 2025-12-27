@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 )
 
@@ -24,6 +25,8 @@ func Percentage() (string, error) {
 	return strings.TrimSpace(string(rawCapacity)), nil
 }
 
+var reChargingStatus = regexp.MustCompile(`(?i)discharging`)
+
 func Charging() (bool, error) {
 	// #nosec G304 -- Defined above
 	rawStatus, err := os.ReadFile(defaultBatteryStatusPath)
@@ -31,5 +34,5 @@ func Charging() (bool, error) {
 		return false, fmt.Errorf("reading status: %w", err)
 	}
 
-	return strings.Contains(strings.ToLower(string(rawStatus)), "discharging"), nil
+	return !reChargingStatus.Match(rawStatus), nil
 }

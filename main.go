@@ -47,7 +47,7 @@ func status(log *logrus.Logger) string {
 
 	line = append(line, clock.DTG())
 
-	return strings.Join(line, "    ")
+	return strings.Join(line, "  ")
 }
 
 func battery() (string, error) {
