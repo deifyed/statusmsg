@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+
+	"github.com/deifyed/statusmsg/pkg/sound/backends/pipewire/objects"
 )
 
 const (
@@ -17,22 +19,17 @@ var bluetoothRe = regexp.MustCompile(`(?i)bluetooth`)
 type Client struct{}
 
 func (c Client) GetVolume() (int, error) {
-	objects, err := getPipeWireObjects()
+	dump, err := getPipewireDump()
 	if err != nil {
-		return -1, fmt.Errorf("getting objects: %w", err)
+		return -1, fmt.Errorf("acquiring pipewire dump: %w", err)
 	}
 
-	defaultAudioSinkName, err := getDefaultAudioSinkName(objects)
+	defaultAudioSinkID, err := objects.GetDefaultAudioSinkID(dump)
 	if err != nil {
-		return -1, fmt.Errorf("getting default audio sink name: %w", err)
+		return -1, fmt.Errorf("acquiring ID: %w", err)
 	}
 
-	defaultAudioSinkNode, err := getNodeByName(objects, defaultAudioSinkName)
-	if err != nil {
-		return -1, fmt.Errorf("getting default audio sink node: %w", err)
-	}
-
-	volume, err := getVolume(defaultAudioSinkNode.ID)
+	volume, err := getVolume(defaultAudioSinkID)
 	if err != nil {
 		return -1, fmt.Errorf("acquiring volume: %w", err)
 	}
@@ -41,12 +38,12 @@ func (c Client) GetVolume() (int, error) {
 }
 
 func (c Client) GetDevice() (string, error) {
-	objects, err := getPipeWireObjects()
+	dump, err := getPipewireDump()
 	if err != nil {
-		return "", fmt.Errorf("getting objects: %w", err)
+		return "", fmt.Errorf("acquiring pipewire dump: %w", err)
 	}
 
-	defaultAudioSinkName, err := getDefaultAudioSinkName(objects)
+	defaultAudioSinkName, err := objects.GetDefaultAudioSinkName(dump)
 	if err != nil {
 		return "", fmt.Errorf("getting default audio sink name: %w", err)
 	}

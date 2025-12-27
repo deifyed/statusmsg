@@ -1,16 +1,9 @@
-package pipewire
+package objects
 
 import (
+	"encoding/json"
 	"fmt"
-	"os/exec"
-	"strconv"
-	"strings"
-)
-
-const (
-	typePipeWireMetadata = "PipeWire:Interface:Metadata"
-
-	metadataKeyDefaultAudioSink = "default.audio.sink"
+	"io"
 )
 
 func getDefaultAudioSinkName(objects []pwDumpResponseObject) (string, error) {
@@ -25,30 +18,6 @@ func getDefaultAudioSinkName(objects []pwDumpResponseObject) (string, error) {
 	}
 
 	return "", fmt.Errorf("couldn't find %s", metadataKeyDefaultAudioSink)
-}
-
-func getProp(key string, props []map[string]any) (any, bool) {
-	for _, prop := range props {
-		if _, ok := prop[key]; ok {
-			return prop[key], true
-		}
-	}
-
-	return nil, false
-}
-
-func getVolumeProp(props []map[string]any) (float64, error) {
-	prop, ok := getProp("volume", props)
-	if !ok {
-		return -1, fmt.Errorf("couldn't find %s prop", "volume")
-	}
-
-	floatVolume, ok := prop.(float64)
-	if !ok {
-		return -1, fmt.Errorf("invalid %s data", "volume")
-	}
-
-	return floatVolume, nil
 }
 
 func getNodeByName(objects []pwDumpResponseObject, name string) (pwDumpResponseObject, error) {
@@ -88,27 +57,13 @@ func metadataKeyIndex(obj pwDumpResponseObject, key string) int {
 	return -1
 }
 
-func sanitizeVolume(raw []byte) string {
-	asString := string(raw)
-	trimmed := strings.Trim(asString, "\n")
+func parseDump(dump io.Reader) ([]pwDumpResponseObject, error) {
+	var response []pwDumpResponseObject
 
-	return strings.Split(trimmed, " ")[1]
-}
-
-func getVolume(id int) (float64, error) {
-	rawVolume, err := exec.Command("wpctl",
-		"get-volume", fmt.Sprintf("%d", id),
-	).Output()
+	err := json.NewDecoder(dump).Decode(&response)
 	if err != nil {
-		return -1, fmt.Errorf("running command: %w", err)
+		return nil, fmt.Errorf("decoding: %w", err)
 	}
 
-	saneVolume := sanitizeVolume(rawVolume)
-
-	volume, err := strconv.ParseFloat(saneVolume, 64)
-	if err != nil {
-		return -1, fmt.Errorf("parsing command output: %w", err)
-	}
-
-	return volume, nil
+	return response, nil
 }

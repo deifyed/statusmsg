@@ -1,40 +1,15 @@
-package pipewire
+package objects
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"os/exec"
 )
 
-func getPipeWireObjects() ([]pwDumpResponseObject, error) {
-	var (
-		stdout bytes.Buffer
-		stderr bytes.Buffer
-	)
+const (
+	typePipeWireMetadata = "PipeWire:Interface:Metadata"
 
-	cmd := exec.Command("pw-dump")
-
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-	if err != nil {
-		err = fmt.Errorf("%w: %s", err, stderr.String())
-
-		return nil, fmt.Errorf("running command: %w", err)
-	}
-
-	var response []pwDumpResponseObject
-
-	err = json.NewDecoder(&stdout).Decode(&response)
-	if err != nil {
-		return nil, fmt.Errorf("decoding: %w", err)
-	}
-
-	return response, nil
-}
+	metadataKeyDefaultAudioSink = "default.audio.sink"
+)
 
 type pwDumpResponseObjectMetadataValue struct {
 	IsObject bool
