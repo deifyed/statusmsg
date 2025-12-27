@@ -87,7 +87,7 @@ func sound() (string, error) {
 		return "", fmt.Errorf("acquiring volume: %w", err)
 	}
 
-	return fmt.Sprintf("%s/%d%%", deviceType, deviceVolume), nil
+	return fmt.Sprintf("%s%d%%", deviceType, deviceVolume), nil
 }
 
 func configureLogger(log *logrus.Logger, out io.Writer) {
