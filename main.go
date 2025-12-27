@@ -47,7 +47,7 @@ func status(log *logrus.Logger) string {
 
 	line = append(line, clock.DTG())
 
-	return strings.Join(line, " :: ")
+	return strings.Join(line, "    ")
 }
 
 func battery() (string, error) {
@@ -66,28 +66,18 @@ func battery() (string, error) {
 		return "", fmt.Errorf("acquiring percentage: %w", err)
 	}
 
-	return fmt.Sprintf("BAT %s%s%%", batteryStatus, batteryPercentage), nil
+	return fmt.Sprintf("⚡︎ %s%s%%", batteryStatus, batteryPercentage), nil
 }
 
 func sound() (string, error) {
 	soundClient := pipewire.Client{}
-
-	deviceTypeRaw, err := soundClient.GetDevice()
-	if err != nil {
-		return "", fmt.Errorf("acquiring device type: %w", err)
-	}
-
-	deviceType := "🔈"
-	if deviceTypeRaw == pipewire.DeviceTypeHeadphones {
-		deviceType = "🎧"
-	}
 
 	deviceVolume, err := soundClient.GetVolume()
 	if err != nil {
 		return "", fmt.Errorf("acquiring volume: %w", err)
 	}
 
-	return fmt.Sprintf("%s%d%%", deviceType, deviceVolume), nil
+	return fmt.Sprintf("dB %d%%", deviceVolume), nil
 }
 
 func configureLogger(log *logrus.Logger, out io.Writer) {
