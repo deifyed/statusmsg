@@ -42,9 +42,9 @@ func status(log *logrus.Logger) string {
 		log.Warnf("Unable to get sound status: %s", err.Error())
 	}
 
-	if status, err := battery(); err == nil {
+	if status, err := battery(); err == nil && status != "" {
 		line = append(line, status)
-	} else {
+	} else if err != nil {
 		log.Warnf("Unable to get battery status: %s", err.Error())
 	}
 
@@ -54,6 +54,15 @@ func status(log *logrus.Logger) string {
 }
 
 func battery() (string, error) {
+	hasBattery, err := bat.HasBattery()
+	if err != nil {
+		return "", fmt.Errorf("checking for battery: %w", err)
+	}
+
+	if !hasBattery {
+		return "", nil
+	}
+
 	charging, err := bat.Charging()
 	if err != nil {
 		return "", fmt.Errorf("acquiring status: %w", err)

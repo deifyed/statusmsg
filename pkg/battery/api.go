@@ -9,9 +9,13 @@ import (
 	"strings"
 )
 
-const defaultBatteryPath = "/sys/class/power_supply/BAT0"
+const (
+	defaultPowerSupplyDir = "/sys/class/power_supply"
+	defaultBattery        = "BAT0"
+)
 
 var (
+	defaultBatteryPath         = path.Join(defaultPowerSupplyDir, defaultBattery)
 	defaultBatteryCapacityPath = path.Join(defaultBatteryPath, "capacity")
 	defaultBatteryStatusPath   = path.Join(defaultBatteryPath, "status")
 )
@@ -35,4 +39,19 @@ func Charging() (bool, error) {
 	}
 
 	return !reChargingStatus.Match(rawStatus), nil
+}
+
+func HasBattery() (bool, error) {
+	entries, err := os.ReadDir(defaultPowerSupplyDir)
+	if err != nil {
+		return false, err
+	}
+
+	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), "BAT") {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
