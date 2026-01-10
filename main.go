@@ -10,6 +10,7 @@ import (
 	bat "github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
 	"github.com/deifyed/statusmsg/pkg/sound/backends/pipewire"
+	"github.com/deifyed/statusmsg/pkg/temperature"
 	"github.com/sirupsen/logrus"
 )
 
@@ -35,6 +36,12 @@ func main() {
 
 func status(log *logrus.Logger) string {
 	line := make([]string, 0)
+
+	if status, err := temperature.CPU(); err == nil {
+		line = append(line, fmt.Sprintf("%s°C", status))
+	} else {
+		log.Warnf("Unable to get CPU temperature: %s", err.Error())
+	}
 
 	if status, err := sound(); err == nil {
 		line = append(line, status)
