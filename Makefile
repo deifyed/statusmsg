@@ -55,7 +55,7 @@ build:
 install:
 	test -f $(BUILD_DIR)/$(BINARY_NAME)
 	mkdir -p $(PREFIX)
-	cp $(BUILD_DIR)/$(BINARY_NAME) $(PREFIX)
+	install $(BUILD_DIR)/$(BINARY_NAME) $(PREFIX)
 
 uninstall:
 	rm $(PREFIX)/$(BINARY_NAME)
