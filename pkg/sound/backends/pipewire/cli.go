@@ -5,19 +5,28 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
+var mutedRe = regexp.MustCompile(`\[MUTED\]`)
+
 func sanitizeVolume(raw []byte) string {
+	if mutedRe.Match(raw) {
+		return "0"
+	}
+
 	asString := string(raw)
+
 	trimmed := strings.Trim(asString, "\n")
 
 	return strings.Split(trimmed, " ")[1]
 }
 
 func getVolume(id int) (float64, error) {
-	rawVolume, err := exec.Command("wpctl",
+	rawVolume, err := exec.Command(
+		"wpctl",
 		"get-volume", fmt.Sprintf("%d", id),
 	).Output()
 	if err != nil {

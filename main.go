@@ -22,7 +22,7 @@ const (
 )
 
 func main() {
-	absoluteApplicationDir, err := getApplicationDirectory()
+	absoluteApplicationDir, err := getAbsoluteApplicationDirectory()
 	if err != nil {
 		log.Fatalf("acquiring application directory: %s", err.Error())
 	}
@@ -105,10 +105,14 @@ func sound() (string, error) {
 		return "", fmt.Errorf("acquiring volume: %w", err)
 	}
 
+	if deviceVolume == 0 {
+		return "dB muted", nil
+	}
+
 	return fmt.Sprintf("dB %d%%", deviceVolume), nil
 }
 
-func getApplicationDirectory() (string, error) {
+func getAbsoluteApplicationDirectory() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("acquiring user home directory: %w", err)
