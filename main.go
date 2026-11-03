@@ -10,6 +10,7 @@ import (
 
 	bat "github.com/deifyed/statusmsg/pkg/battery"
 	"github.com/deifyed/statusmsg/pkg/clock"
+	"github.com/deifyed/statusmsg/pkg/countdown"
 	"github.com/deifyed/statusmsg/pkg/sound/backends/pipewire"
 	"github.com/deifyed/statusmsg/pkg/temperature"
 	"github.com/sirupsen/logrus"
@@ -19,6 +20,8 @@ const (
 	defaultLogFileName = "statusmsg.log"
 	defaultAppName     = "statusmsg"
 	delimiter          = "  "
+	countdownLabel     = "Overtakelse"
+	countdownDate      = "2026-12-01"
 )
 
 func main() {
@@ -45,6 +48,12 @@ func main() {
 
 func status(log *logrus.Logger) string {
 	line := make([]string, 0)
+
+	if days, err := countdown.Days(countdownDate); err == nil {
+		line = append(line, fmt.Sprintf("%s %dd", countdownLabel, days))
+	} else {
+		log.Warnf("Unable to get countdown: %s", err.Error())
+	}
 
 	if status, err := temperature.CPU(); err == nil {
 		line = append(line, fmt.Sprintf("%s°C", status))

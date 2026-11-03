@@ -1,4 +1,3 @@
-.PHONY=fmt
 BINARY_NAME=status
 GOPATH := $(shell go env GOPATH)
 GOBIN ?= $(GOPATH)/bin
@@ -29,6 +28,7 @@ $(GOCRITIC):
 
 dependencies: $(GOLANGCILINT) $(RICHGO) $(GOSEC) $(GOFUMPT) $(GOCRITIC)
 
+.PHONY=fmt
 fmt: $(GOFUMPT) $(GOCRITIC)
 	$(GO) fmt ./...
 	goimports -w .
@@ -48,6 +48,7 @@ security: $(GOSEC)
 check: dependencies
 	pre-commit run -a
 
+.PHONY=build
 build:
 	mkdir -p $(BUILD_DIR)
 	go build -o $(BUILD_DIR)/$(BINARY_NAME) main.go
